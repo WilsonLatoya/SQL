@@ -2,7 +2,7 @@
 
 
 
-#LaToya Wilson Data Amalytics Portfolio
+###LaToya Wilson Data Amalytics Portfolio
 
 ## Exploring Data, One Query at a Time
 
