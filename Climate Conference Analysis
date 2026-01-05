@@ -1,0 +1,100 @@
+Climate Conference Project
+https://www.db-fiddle.com/f/pxMci1sLL945KHKYvpe9W6/1
+
+LEFT JOIN: Identify VIP members for whom no reservation data has been entered, including hotel and event attendance indicators.
+SELECT
+  v.member_id,
+  v.first_name,
+  v.last_name,
+  r.hotel,
+  r.welcome_rsvp,
+  r.dinner_rsvp
+FROM vips v
+LEFT JOIN reservations r
+  ON v.member_id = r.member_id
+WHERE r.member_id IS NULL
+ORDER BY v.last_name, v.first_name;
+
+INNER JOIN: Which VIP members have confirmed reservation records entered in the system?
+SELECT
+  v.member_id,
+  v.first_name,
+  v.last_name,
+  r.hotel,
+  r.welcome_rsvp,
+  r.dinner_rsvp
+FROM vips v
+INNER JOIN reservations r
+  ON v.member_id = r.member_id
+ORDER BY v.last_name, v.first_name;
+
+Multiple JOINs: For each VIP, what event are they presenting at, and which hotel are they assigned to for the conference?
+SELECT
+  v.member_id,
+  v.first_name,
+  v.last_name,
+  e.event_name,
+  e.event_type,
+  h.hotel_name,
+  h.address
+FROM vips v
+LEFT JOIN events e
+  ON v.event = e.event_id
+LEFT JOIN reservations r
+  ON v.member_id = r.member_id
+LEFT JOIN hotels h
+  ON r.hotel = h.hotel_id
+ORDER BY e.event_name, v.last_name, v.first_name;
+
+SELF JOIN: Which VIP is assigned to provide feedback to which other VIP presenter?
+SELECT
+  giver.member_id AS giver_id,
+  giver.first_name AS giver_first_name,
+  giver.last_name  AS giver_last_name,
+  receiver.member_id AS receiver_id,
+  receiver.first_name AS receiver_first_name,
+  receiver.last_name  AS receiver_last_name
+FROM vips giver
+LEFT JOIN vips receiver
+  ON giver.provides_feedback_to = receiver.member_id
+ORDER BY giver.last_name, giver.first_name;
+
+BIT:Which VIPs have confirmed attendance for both the welcome reception and the thank-you dinner
+SELECT
+  v.member_id,
+  v.first_name,
+  v.last_name
+FROM vips v
+INNER JOIN reservations r
+  ON v.member_id = r.member_id
+WHERE r.welcome_rsvp = 1
+  AND r.dinner_rsvp = 1
+ORDER BY v.last_name, v.first_name;
+
+CUSTOM Query: How many VIP members are assigned to each hotel for the conference
+SELECT
+  h.hotel_name,
+  COUNT(*) AS vip_count
+FROM reservations r
+INNER JOIN hotels h
+  ON r.hotel = h.hotel_id
+GROUP BY h.hotel_name
+ORDER BY vip_count DESC, h.hotel_name;
+
+Ouery with a subquery: Which hotels are accommodating a higher number of VIP members than the average across all conference hotels?
+SELECT
+  h.hotel_name,
+  COUNT(*) AS vip_count
+FROM reservations r
+JOIN hotels h
+  ON r.hotel = h.hotel_id
+GROUP BY h.hotel_name
+HAVING COUNT(*) > (
+  SELECT AVG(hotel_vips)
+  FROM (
+    SELECT COUNT(*) AS hotel_vips
+    FROM reservations
+    GROUP BY hotel
+  ) t
+)
+ORDER BY vip_count DESC;
