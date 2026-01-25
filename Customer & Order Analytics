@@ -56,3 +56,16 @@ ON FEB.orderid=cust.order_id
 WHERE Feb.Quantity>2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+
+#8. Which employee IDs begin with ‘14’, contain exactly one additional character after ‘14’, and end with ‘9’?
+SELECT employee_ID
+FROM employees
+WHERE employee_ID LIKE '14_9';
+
+Which order IDs in the MarSales table begin with ‘16’, contain exactly one unknown character immediately after, are followed by ‘0’, and may include any number of additional characters thereafter?
+SELECT orderID
+FROM BIT_DB.MarSales
+WHERE orderID LIKE '16_0%';
+
+
+
